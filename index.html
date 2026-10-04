@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Projet ou pas projet ?</title>
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+[hidden]{display:none!important}
+/* Layout : une seule colonne pour téléphone. Une carte au centre, trois tas en dessous, puis le récapitulatif. */
+:root{
+  --bg:#F3EFFB; --surface:#FFFFFF; --ink:#1D2340; --muted:#5B6080; --line:#D9D2EE;
+  --brand:#0B5CAB; --brand-ink:#FFFFFF;
+  --p1:#CFEEDD; --p1-ink:#0E5234;   /* projet */
+  --p2:#FFD9CC; --p2-ink:#7A2A10;   /* pas un projet */
+  --p3:#FFEDB3; --p3-ink:#6A4B00;   /* ça dépend */
+  --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+  --body:Lato,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#17152A; --surface:#231F3D; --ink:#F1EEFB; --muted:#B3AED0; --line:#3A3560;
+  --brand:#7DB6F2; --brand-ink:#0B1730;
+  --p1:#1F4D3A; --p1-ink:#CFF3E0; --p2:#5A2A1C; --p2-ink:#FFDDD1; --p3:#57430A; --p3-ink:#FFEBB0;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#17152A; --surface:#231F3D; --ink:#F1EEFB; --muted:#B3AED0; --line:#3A3560;
+  --brand:#7DB6F2; --brand-ink:#0B1730;
+  --p1:#1F4D3A; --p1-ink:#CFF3E0; --p2:#5A2A1C; --p2-ink:#FFDDD1; --p3:#57430A; --p3-ink:#FFEBB0;
+  color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45}
+.wrap{max-width:520px;margin:0 auto;padding-inline:16px;padding-block:20px 32px;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-direction:column;gap:4px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+h1{font-family:var(--display);font-weight:800;font-size:30px;line-height:1.05;margin:0;color:var(--brand);text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:20px;margin:0;text-wrap:balance}
+.rule{margin:0;color:var(--muted);font-size:15px}
+.progress{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:99px;transition:width .25s}
+.card{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:22px 20px;min-height:150px;display:flex;flex-direction:column;gap:10px;justify-content:center}
+.card .num{font-family:var(--display);font-weight:800;font-size:15px;color:var(--brand)}
+.card .txt{font-family:var(--display);font-weight:600;font-size:23px;line-height:1.2;text-wrap:balance}
+.piles{display:flex;flex-direction:column;gap:10px}
+button{font:inherit;color:inherit;cursor:pointer;border:0;border-radius:14px}
+button:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.pile{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;font-weight:700;font-size:18px;text-align:left;min-height:58px}
+.pile small{font-weight:400;font-size:14px;opacity:.85;font-variant-numeric:tabular-nums}
+.p1{background:var(--p1);color:var(--p1-ink)} .p2{background:var(--p2);color:var(--p2-ink)} .p3{background:var(--p3);color:var(--p3-ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.ghost{background:transparent;border:2px solid var(--line);padding:10px 14px;font-size:15px;color:var(--ink)}
+.solid{background:var(--brand);color:var(--brand-ink);padding:12px 16px;font-weight:700}
+details{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:12px 16px}
+summary{font-weight:700;cursor:pointer}
+details ol{margin:10px 0 2px;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.group{border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.group h2{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.group h2 span{font-family:var(--body);font-size:14px;font-weight:400}
+.item{background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.item .line{display:flex;gap:10px;align-items:baseline}
+.item b{font-family:var(--display);color:var(--brand);min-width:1.6em;font-variant-numeric:tabular-nums}
+.item .txt{min-width:0;flex:1}
+.item .mv{background:transparent;border:1.5px solid var(--line);border-radius:10px;padding:6px 10px;font-size:14px;align-self:flex-start}
+.chooser{display:flex;gap:6px;flex-wrap:wrap}
+.chooser button{padding:8px 12px;font-size:14px;font-weight:700;border-radius:10px}
+.empty{font-size:14px;opacity:.8;margin:0}
+.note{font-size:15px;color:var(--muted);margin:0}
+.confirm{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+@media (prefers-reduced-motion: reduce){ .bar i{transition:none} }
+
+.qr{display:flex;flex-direction:column;gap:10px;align-items:center;padding-top:10px}
+.qr svg{width:min(100%,340px);height:auto;border-radius:8px}
+.qr code{font-size:13px;word-break:break-all;text-align:center}
+.copy{font-size:13px;color:var(--muted);text-align:center;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Bloc 1 · Exercice 1</div>
+    <h1>Projet ou pas projet ?</h1>
+    <p class="rule">En sous-groupe. Pour chaque situation, choisissez un tas et dites pourquoi en une phrase.</p>
+  </header>
+
+  <section id="play" class="wrap" style="padding:0">
+    <div class="progress"><span id="count">Situation 1 sur 14</span><div class="bar"><i id="fill" style="width:0%"></i></div></div>
+    <div class="card" aria-live="polite"><div class="num" id="cnum">Situation 1</div><div class="txt" id="ctxt"></div></div>
+    <div class="piles">
+      <button class="pile p1" id="b1" data-p="1">Projet <small id="n1">0</small></button>
+      <button class="pile p2" id="b2" data-p="2">Pas un projet <small id="n2">0</small></button>
+      <button class="pile p3" id="b3" data-p="3">Ça dépend <small id="n3">0</small></button>
+    </div>
+    <div class="row">
+      <button class="ghost" id="back">Revenir à la situation précédente</button>
+    </div>
+  </section>
+
+  <section id="recap" class="wrap" style="padding:0" hidden>
+    <h2>Votre tri</h2>
+    <p class="note">Gardez cet écran ouvert pour la restitution. Pour changer une situation de tas, touchez « Déplacer ».</p>
+    <div id="groups" class="wrap" style="padding:0"></div>
+  </section>
+
+  <details>
+    <summary>Le test en 3 questions</summary>
+    <ol>
+      <li>Est-ce que ça a une fin ?</li>
+      <li>Est-ce que c’est du jamais fait ?</li>
+      <li>Est-ce que ça demande de coordonner plusieurs acteurs vers un résultat daté ?</li>
+    </ol>
+  </details>
+
+
+  <details>
+    <summary>Formateur : afficher le QR code</summary>
+    <div class="qr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41 41" role="img" aria-label="QR code de la page" shape-rendering="crispEdges"><rect width="41" height="41" fill="#fff"/><path d="M4,4h1v1h-1zM5,4h1v1h-1zM6,4h1v1h-1zM7,4h1v1h-1zM8,4h1v1h-1zM9,4h1v1h-1zM10,4h1v1h-1zM12,4h1v1h-1zM14,4h1v1h-1zM15,4h1v1h-1zM22,4h1v1h-1zM23,4h1v1h-1zM24,4h1v1h-1zM25,4h1v1h-1zM27,4h1v1h-1zM30,4h1v1h-1zM31,4h1v1h-1zM32,4h1v1h-1zM33,4h1v1h-1zM34,4h1v1h-1zM35,4h1v1h-1zM36,4h1v1h-1zM4,5h1v1h-1zM10,5h1v1h-1zM12,5h1v1h-1zM13,5h1v1h-1zM15,5h1v1h-1zM16,5h1v1h-1zM18,5h1v1h-1zM21,5h1v1h-1zM27,5h1v1h-1zM30,5h1v1h-1zM36,5h1v1h-1zM4,6h1v1h-1zM6,6h1v1h-1zM7,6h1v1h-1zM8,6h1v1h-1zM10,6h1v1h-1zM13,6h1v1h-1zM15,6h1v1h-1zM16,6h1v1h-1zM17,6h1v1h-1zM18,6h1v1h-1zM19,6h1v1h-1zM20,6h1v1h-1zM22,6h1v1h-1zM23,6h1v1h-1zM26,6h1v1h-1zM27,6h1v1h-1zM28,6h1v1h-1zM30,6h1v1h-1zM32,6h1v1h-1zM33,6h1v1h-1zM34,6h1v1h-1zM36,6h1v1h-1zM4,7h1v1h-1zM6,7h1v1h-1zM7,7h1v1h-1zM8,7h1v1h-1zM10,7h1v1h-1zM12,7h1v1h-1zM13,7h1v1h-1zM19,7h1v1h-1zM22,7h1v1h-1zM23,7h1v1h-1zM26,7h1v1h-1zM30,7h1v1h-1zM32,7h1v1h-1zM33,7h1v1h-1zM34,7h1v1h-1zM36,7h1v1h-1zM4,8h1v1h-1zM6,8h1v1h-1zM7,8h1v1h-1zM8,8h1v1h-1zM10,8h1v1h-1zM13,8h1v1h-1zM14,8h1v1h-1zM17,8h1v1h-1zM20,8h1v1h-1zM22,8h1v1h-1zM26,8h1v1h-1zM27,8h1v1h-1zM28,8h1v1h-1zM30,8h1v1h-1zM32,8h1v1h-1zM33,8h1v1h-1zM34,8h1v1h-1zM36,8h1v1h-1zM4,9h1v1h-1zM10,9h1v1h-1zM13,9h1v1h-1zM14,9h1v1h-1zM16,9h1v1h-1zM18,9h1v1h-1zM19,9h1v1h-1zM20,9h1v1h-1zM21,9h1v1h-1zM26,9h1v1h-1zM28,9h1v1h-1zM30,9h1v1h-1zM36,9h1v1h-1zM4,10h1v1h-1zM5,10h1v1h-1zM6,10h1v1h-1zM7,10h1v1h-1zM8,10h1v1h-1zM9,10h1v1h-1zM10,10h1v1h-1zM12,10h1v1h-1zM14,10h1v1h-1zM16,10h1v1h-1zM18,10h1v1h-1zM20,10h1v1h-1zM22,10h1v1h-1zM24,10h1v1h-1zM26,10h1v1h-1zM28,10h1v1h-1zM30,10h1v1h-1zM31,10h1v1h-1zM32,10h1v1h-1zM33,10h1v1h-1zM34,10h1v1h-1zM35,10h1v1h-1zM36,10h1v1h-1zM12,11h1v1h-1zM14,11h1v1h-1zM15,11h1v1h-1zM16,11h1v1h-1zM18,11h1v1h-1zM19,11h1v1h-1zM20,11h1v1h-1zM21,11h1v1h-1zM22,11h1v1h-1zM23,11h1v1h-1zM26,11h1v1h-1zM27,11h1v1h-1zM28,11h1v1h-1zM4,12h1v1h-1zM6,12h1v1h-1zM7,12h1v1h-1zM9,12h1v1h-1zM10,12h1v1h-1zM11,12h1v1h-1zM16,12h1v1h-1zM18,12h1v1h-1zM19,12h1v1h-1zM20,12h1v1h-1zM21,12h1v1h-1zM24,12h1v1h-1zM25,12h1v1h-1zM27,12h1v1h-1zM30,12h1v1h-1zM33,12h1v1h-1zM35,12h1v1h-1zM36,12h1v1h-1zM8,13h1v1h-1zM11,13h1v1h-1zM12,13h1v1h-1zM13,13h1v1h-1zM17,13h1v1h-1zM20,13h1v1h-1zM21,13h1v1h-1zM22,13h1v1h-1zM23,13h1v1h-1zM24,13h1v1h-1zM25,13h1v1h-1zM26,13h1v1h-1zM27,13h1v1h-1zM30,13h1v1h-1zM31,13h1v1h-1zM33,13h1v1h-1zM34,13h1v1h-1zM35,13h1v1h-1zM10,14h1v1h-1zM11,14h1v1h-1zM13,14h1v1h-1zM17,14h1v1h-1zM20,14h1v1h-1zM22,14h1v1h-1zM25,14h1v1h-1zM27,14h1v1h-1zM28,14h1v1h-1zM29,14h1v1h-1zM30,14h1v1h-1zM31,14h1v1h-1zM32,14h1v1h-1zM33,14h1v1h-1zM35,14h1v1h-1zM36,14h1v1h-1zM5,15h1v1h-1zM6,15h1v1h-1zM7,15h1v1h-1zM8,15h1v1h-1zM11,15h1v1h-1zM13,15h1v1h-1zM14,15h1v1h-1zM16,15h1v1h-1zM21,15h1v1h-1zM23,15h1v1h-1zM24,15h1v1h-1zM26,15h1v1h-1zM29,15h1v1h-1zM31,15h1v1h-1zM33,15h1v1h-1zM36,15h1v1h-1zM4,16h1v1h-1zM5,16h1v1h-1zM6,16h1v1h-1zM8,16h1v1h-1zM9,16h1v1h-1zM10,16h1v1h-1zM11,16h1v1h-1zM12,16h1v1h-1zM13,16h1v1h-1zM14,16h1v1h-1zM18,16h1v1h-1zM19,16h1v1h-1zM20,16h1v1h-1zM23,16h1v1h-1zM26,16h1v1h-1zM28,16h1v1h-1zM32,16h1v1h-1zM33,16h1v1h-1zM35,16h1v1h-1zM36,16h1v1h-1zM4,17h1v1h-1zM7,17h1v1h-1zM9,17h1v1h-1zM11,17h1v1h-1zM12,17h1v1h-1zM17,17h1v1h-1zM18,17h1v1h-1zM24,17h1v1h-1zM31,17h1v1h-1zM33,17h1v1h-1zM35,17h1v1h-1zM5,18h1v1h-1zM8,18h1v1h-1zM9,18h1v1h-1zM10,18h1v1h-1zM11,18h1v1h-1zM13,18h1v1h-1zM14,18h1v1h-1zM15,18h1v1h-1zM17,18h1v1h-1zM18,18h1v1h-1zM21,18h1v1h-1zM22,18h1v1h-1zM23,18h1v1h-1zM24,18h1v1h-1zM25,18h1v1h-1zM26,18h1v1h-1zM28,18h1v1h-1zM30,18h1v1h-1zM31,18h1v1h-1zM32,18h1v1h-1zM5,19h1v1h-1zM6,19h1v1h-1zM9,19h1v1h-1zM12,19h1v1h-1zM13,19h1v1h-1zM14,19h1v1h-1zM16,19h1v1h-1zM19,19h1v1h-1zM22,19h1v1h-1zM23,19h1v1h-1zM24,19h1v1h-1zM25,19h1v1h-1zM27,19h1v1h-1zM28,19h1v1h-1zM29,19h1v1h-1zM30,19h1v1h-1zM33,19h1v1h-1zM34,19h1v1h-1zM7,20h1v1h-1zM9,20h1v1h-1zM10,20h1v1h-1zM12,20h1v1h-1zM17,20h1v1h-1zM18,20h1v1h-1zM20,20h1v1h-1zM22,20h1v1h-1zM23,20h1v1h-1zM24,20h1v1h-1zM25,20h1v1h-1zM26,20h1v1h-1zM27,20h1v1h-1zM29,20h1v1h-1zM30,20h1v1h-1zM32,20h1v1h-1zM34,20h1v1h-1zM4,21h1v1h-1zM7,21h1v1h-1zM9,21h1v1h-1zM11,21h1v1h-1zM12,21h1v1h-1zM13,21h1v1h-1zM14,21h1v1h-1zM16,21h1v1h-1zM17,21h1v1h-1zM18,21h1v1h-1zM19,21h1v1h-1zM24,21h1v1h-1zM25,21h1v1h-1zM26,21h1v1h-1zM27,21h1v1h-1zM28,21h1v1h-1zM29,21h1v1h-1zM30,21h1v1h-1zM32,21h1v1h-1zM33,21h1v1h-1zM35,21h1v1h-1zM36,21h1v1h-1zM4,22h1v1h-1zM8,22h1v1h-1zM9,22h1v1h-1zM10,22h1v1h-1zM13,22h1v1h-1zM18,22h1v1h-1zM19,22h1v1h-1zM22,22h1v1h-1zM24,22h1v1h-1zM26,22h1v1h-1zM28,22h1v1h-1zM29,22h1v1h-1zM30,22h1v1h-1zM31,22h1v1h-1zM32,22h1v1h-1zM34,22h1v1h-1zM4,23h1v1h-1zM11,23h1v1h-1zM13,23h1v1h-1zM14,23h1v1h-1zM17,23h1v1h-1zM21,23h1v1h-1zM22,23h1v1h-1zM23,23h1v1h-1zM24,23h1v1h-1zM26,23h1v1h-1zM29,23h1v1h-1zM30,23h1v1h-1zM32,23h1v1h-1zM35,23h1v1h-1zM4,24h1v1h-1zM5,24h1v1h-1zM7,24h1v1h-1zM8,24h1v1h-1zM9,24h1v1h-1zM10,24h1v1h-1zM12,24h1v1h-1zM13,24h1v1h-1zM15,24h1v1h-1zM18,24h1v1h-1zM19,24h1v1h-1zM20,24h1v1h-1zM23,24h1v1h-1zM25,24h1v1h-1zM28,24h1v1h-1zM33,24h1v1h-1zM34,24h1v1h-1zM36,24h1v1h-1zM4,25h1v1h-1zM5,25h1v1h-1zM7,25h1v1h-1zM8,25h1v1h-1zM9,25h1v1h-1zM11,25h1v1h-1zM12,25h1v1h-1zM15,25h1v1h-1zM16,25h1v1h-1zM17,25h1v1h-1zM18,25h1v1h-1zM19,25h1v1h-1zM20,25h1v1h-1zM23,25h1v1h-1zM25,25h1v1h-1zM27,25h1v1h-1zM29,25h1v1h-1zM34,25h1v1h-1zM36,25h1v1h-1zM6,26h1v1h-1zM7,26h1v1h-1zM8,26h1v1h-1zM9,26h1v1h-1zM10,26h1v1h-1zM12,26h1v1h-1zM13,26h1v1h-1zM16,26h1v1h-1zM18,26h1v1h-1zM19,26h1v1h-1zM22,26h1v1h-1zM24,26h1v1h-1zM26,26h1v1h-1zM27,26h1v1h-1zM28,26h1v1h-1zM30,26h1v1h-1zM32,26h1v1h-1zM33,26h1v1h-1zM34,26h1v1h-1zM35,26h1v1h-1zM36,26h1v1h-1zM5,27h1v1h-1zM7,27h1v1h-1zM8,27h1v1h-1zM11,27h1v1h-1zM13,27h1v1h-1zM14,27h1v1h-1zM16,27h1v1h-1zM19,27h1v1h-1zM22,27h1v1h-1zM23,27h1v1h-1zM24,27h1v1h-1zM33,27h1v1h-1zM36,27h1v1h-1zM4,28h1v1h-1zM7,28h1v1h-1zM10,28h1v1h-1zM13,28h1v1h-1zM21,28h1v1h-1zM26,28h1v1h-1zM28,28h1v1h-1zM29,28h1v1h-1zM30,28h1v1h-1zM31,28h1v1h-1zM32,28h1v1h-1zM12,29h1v1h-1zM14,29h1v1h-1zM15,29h1v1h-1zM17,29h1v1h-1zM18,29h1v1h-1zM19,29h1v1h-1zM20,29h1v1h-1zM23,29h1v1h-1zM25,29h1v1h-1zM26,29h1v1h-1zM27,29h1v1h-1zM28,29h1v1h-1zM32,29h1v1h-1zM33,29h1v1h-1zM4,30h1v1h-1zM5,30h1v1h-1zM6,30h1v1h-1zM7,30h1v1h-1zM8,30h1v1h-1zM9,30h1v1h-1zM10,30h1v1h-1zM12,30h1v1h-1zM14,30h1v1h-1zM15,30h1v1h-1zM16,30h1v1h-1zM17,30h1v1h-1zM20,30h1v1h-1zM21,30h1v1h-1zM22,30h1v1h-1zM23,30h1v1h-1zM24,30h1v1h-1zM25,30h1v1h-1zM26,30h1v1h-1zM27,30h1v1h-1zM28,30h1v1h-1zM30,30h1v1h-1zM32,30h1v1h-1zM4,31h1v1h-1zM10,31h1v1h-1zM12,31h1v1h-1zM14,31h1v1h-1zM17,31h1v1h-1zM18,31h1v1h-1zM19,31h1v1h-1zM20,31h1v1h-1zM21,31h1v1h-1zM22,31h1v1h-1zM24,31h1v1h-1zM25,31h1v1h-1zM27,31h1v1h-1zM28,31h1v1h-1zM32,31h1v1h-1zM33,31h1v1h-1zM34,31h1v1h-1zM35,31h1v1h-1zM4,32h1v1h-1zM6,32h1v1h-1zM7,32h1v1h-1zM8,32h1v1h-1zM10,32h1v1h-1zM13,32h1v1h-1zM15,32h1v1h-1zM16,32h1v1h-1zM17,32h1v1h-1zM20,32h1v1h-1zM21,32h1v1h-1zM22,32h1v1h-1zM23,32h1v1h-1zM25,32h1v1h-1zM26,32h1v1h-1zM27,32h1v1h-1zM28,32h1v1h-1zM29,32h1v1h-1zM30,32h1v1h-1zM31,32h1v1h-1zM32,32h1v1h-1zM34,32h1v1h-1zM4,33h1v1h-1zM6,33h1v1h-1zM7,33h1v1h-1zM8,33h1v1h-1zM10,33h1v1h-1zM12,33h1v1h-1zM15,33h1v1h-1zM16,33h1v1h-1zM17,33h1v1h-1zM18,33h1v1h-1zM20,33h1v1h-1zM21,33h1v1h-1zM24,33h1v1h-1zM26,33h1v1h-1zM31,33h1v1h-1zM33,33h1v1h-1zM34,33h1v1h-1zM36,33h1v1h-1zM4,34h1v1h-1zM6,34h1v1h-1zM7,34h1v1h-1zM8,34h1v1h-1zM10,34h1v1h-1zM12,34h1v1h-1zM13,34h1v1h-1zM14,34h1v1h-1zM15,34h1v1h-1zM16,34h1v1h-1zM18,34h1v1h-1zM19,34h1v1h-1zM20,34h1v1h-1zM22,34h1v1h-1zM24,34h1v1h-1zM27,34h1v1h-1zM28,34h1v1h-1zM29,34h1v1h-1zM30,34h1v1h-1zM31,34h1v1h-1zM33,34h1v1h-1zM4,35h1v1h-1zM10,35h1v1h-1zM15,35h1v1h-1zM16,35h1v1h-1zM17,35h1v1h-1zM18,35h1v1h-1zM21,35h1v1h-1zM22,35h1v1h-1zM26,35h1v1h-1zM27,35h1v1h-1zM28,35h1v1h-1zM30,35h1v1h-1zM31,35h1v1h-1zM32,35h1v1h-1zM36,35h1v1h-1zM4,36h1v1h-1zM5,36h1v1h-1zM6,36h1v1h-1zM7,36h1v1h-1zM8,36h1v1h-1zM9,36h1v1h-1zM10,36h1v1h-1zM12,36h1v1h-1zM14,36h1v1h-1zM15,36h1v1h-1zM18,36h1v1h-1zM21,36h1v1h-1zM22,36h1v1h-1zM23,36h1v1h-1zM25,36h1v1h-1zM26,36h1v1h-1zM27,36h1v1h-1zM29,36h1v1h-1zM32,36h1v1h-1zM34,36h1v1h-1z" fill="#000"/></svg><code>https://atbafares-cmyk.github.io/Projet-Pas-Projet/</code></div>
+  </details>
+
+  <div class="row"><button class="ghost" id="reset">Recommencer le tri</button></div>
+  <div class="confirm" id="confirm" hidden>
+    <div>Effacer votre tri et repartir de la première situation ?</div>
+    <div class="row"><button class="solid" id="yes">Oui, recommencer</button><button class="ghost" id="no">Non, garder mon tri</button></div>
+  </div>
+  <footer class="copy">© <span id="yr">2026</span> 23 MindSet - Fares ATBA. Tous droits réservés.</footer>
+</div>
+
+<script>
+var CARDS=[
+ "Réorganiser l’accueil du public dans le hall du palais",
+ "Enregistrer les dossiers entrants au fil de l’eau",
+ "Déployer un nouvel applicatif dans tous les services",
+ "Répondre aux demandes de renseignements du public",
+ "Organiser le déménagement d’un service vers un autre étage",
+ "Rédiger une note de service",
+ "Organiser la journée d’accueil des nouveaux arrivants, comme chaque année",
+ "Résorber l’arriéré de dossiers en 6 mois avec une équipe dédiée",
+ "Tenir les audiences selon le calendrier",
+ "Mettre en place un dispositif de télétravail",
+ "Archiver les dossiers clos selon la procédure en vigueur",
+ "Refondre entièrement le plan de classement des archives",
+ "Commander les fournitures",
+ "Créer un livret d’accueil pour les nouveaux arrivants"
+];
+var PILES={1:"Projet",2:"Pas un projet",3:"Ça dépend"};
+var KEY="pop-ex1-v1";
+var state={a:[],open:-1};           // a[i] = tas choisi (1,2,3) pour la carte i
+function load(){try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.a))state.a=s.a.slice(0,CARDS.length)}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({a:state.a}))}catch(e){}}
+function $(id){return document.getElementById(id)}
+function counts(){var c={1:0,2:0,3:0};state.a.forEach(function(p){if(c[p]!==undefined)c[p]++});return c}
+function render(){
+  var i=state.a.length,done=i>=CARDS.length,c=counts();
+  $("play").hidden=done; $("recap").hidden=!done;
+  $("n1").textContent=c[1];$("n2").textContent=c[2];$("n3").textContent=c[3];
+  if(!done){
+    $("count").textContent="Situation "+(i+1)+" sur "+CARDS.length;
+    $("fill").style.width=(i/CARDS.length*100)+"%";
+    $("cnum").textContent="Situation "+(i+1);
+    $("ctxt").textContent=CARDS[i];
+    $("back").hidden=i===0;
+  }else{ renderRecap(c) }
+}
+function renderRecap(c){
+  var g=$("groups");g.textContent="";
+  [1,2,3].forEach(function(p){
+    var box=document.createElement("div");box.className="group p"+p;
+    var h=document.createElement("h2");h.textContent=PILES[p];
+    var sp=document.createElement("span");sp.textContent=c[p]+(c[p]>1?" situations":" situation");h.appendChild(sp);box.appendChild(h);
+    var any=false;
+    state.a.forEach(function(v,i){
+      if(v!==p)return;any=true;
+      var it=document.createElement("div");it.className="item";
+      var ln=document.createElement("div");ln.className="line";
+      var b=document.createElement("b");b.textContent=i+1;
+      var t=document.createElement("span");t.className="txt";t.textContent=CARDS[i];
+      ln.appendChild(b);ln.appendChild(t);it.appendChild(ln);
+      if(state.open===i){
+        var ch=document.createElement("div");ch.className="chooser";
+        [1,2,3].forEach(function(q){ if(q===p)return;
+          var bt=document.createElement("button");bt.className="p"+q;bt.textContent="Vers « "+PILES[q]+" »";
+          bt.onclick=function(){state.a[i]=q;state.open=-1;save();render()};ch.appendChild(bt)});
+        var cancel=document.createElement("button");cancel.className="ghost";cancel.textContent="Annuler";
+        cancel.onclick=function(){state.open=-1;render()};ch.appendChild(cancel);it.appendChild(ch);
+      }else{
+        var mv=document.createElement("button");mv.className="mv";mv.textContent="Déplacer";
+        mv.setAttribute("aria-label","Déplacer la situation "+(i+1));
+        mv.onclick=function(){state.open=i;render()};it.appendChild(mv);
+      }
+      box.appendChild(it);
+    });
+    if(!any){var e=document.createElement("p");e.className="empty";e.textContent="Aucune situation dans ce tas.";box.appendChild(e)}
+    g.appendChild(box);
+  });
+}
+["b1","b2","b3"].forEach(function(id){$(id).onclick=function(){
+  if(state.a.length<CARDS.length){state.a.push(+this.dataset.p);save();render()}}});
+$("back").onclick=function(){state.a.pop();save();render()};
+$("reset").onclick=function(){$("confirm").hidden=false;$("yes").focus()};
+$("no").onclick=function(){$("confirm").hidden=true};
+$("yes").onclick=function(){state.a=[];state.open=-1;save();$("confirm").hidden=true;render();window.scrollTo(0,0)};
+try{document.getElementById("yr").textContent=new Date().getFullYear()}catch(e){}
+load();render();
+</script>
+</body>
+</html>
